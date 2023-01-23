@@ -1,0 +1,63 @@
+Google App Engine 101
+
+Visit google cloud platform
+
+Create a project using the free tire
+
+Launch into the project
+
+In more products search for APP ENGINE under serverless
+
+Go to the app engine dashboard and click create application
+
+Choose a preferable region and click next
+
+Under resources select your prefered launguage, you can also opt for other languages by  bringing in a containerized runtime from docker
+
+Choose among standard/flexible environment
+
+Next, enable the cloud shell ( note: app engine admin API must be pre-enabled for shell to work)
+
+Open cloud editor and code your application or clone a repository
+
+The basic setup for any project would be the configuration file (app.yaml) application file (main.py/main.java)
+and a dependancy file (requirements.txt or package.json or pom.xml)
+
+choose an authorised projects to deploy the application on
+
+"gcloud app create" lets you create a project from the terminal 
+
+use "gcloud config list" on the terminal to get a list of projects
+
+next cd into the project directory and type "gcloud config set project {project-id}"
+
+"gcloud app deploy" deploys the app, this processes with the descriptor, source, target project, target service and target version to yield a target URL
+
+before deploying go to IAM and provide the required roles as needed for the service account to smoothly run the application
+
+{{this is required because when app is deployed to GAE a deployment package is created using CI/CD tool called cloud build and stored as an object in google cloud storage. So we need to provide permissions such as storage object viewer to a cloud build service account for the builder to run}}
+
+Use the target url to view your deployed application in any browser
+
+On deployment there many stats of the deployment including summary, billing status, current load, client/server error, application errors etc
+
+Other options includes services, versions and instances of the application all showing stats and details
+
+"gcloud app {services/version/instances} list" is a CLA for the same and "gcloud app describe" gives full stats of the app 
+
+"gcloud app deploy --version=v2" is used to deploy another version of the application, the advantage here is that version 1 will be up and running until version 2 is successfully deployed
+and even when v2 is live v1 can still be accessed
+
+"gcloud app browse version=v1" yields URL of v1 which is used to access the prior version of the app
+
+"gcloud app deploy --version=v3 --no-promote" deploys an app but does not split traffic to it and this can be used for testing by browsing for it
+
+"gcloud app services set-traffic splits=v3=0.5,v2=0.5" splits traffic 50-50 and out of 100 users 50 will be directed to v2 and the remaing to v3 using client IP
+
+"gcloud app services set-traffic splits=v3=0.5,v2=0.5 --split-by=random" does the spliting randomly
+
+"gcloud app services set-traffic splits=v3=0.5,v2=0.5 --split-by=coockie" does the spliting using a specific data from client cookies 
+
+Google-cloud-sdk\bin\dev-appserver.py “<<path_address>>”
+7.	In web browser obtain the result from address localhost:8080
+

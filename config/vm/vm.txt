@@ -1,0 +1,26 @@
+1.)
+install and setup
+
+2.)
+run a c program using gcc
+
+>sudo apt install gcc
+
+gedit>sample.c>
+	#include<stdio.h>
+	void main()
+	{		
+		printf("Hello Ulagam");
+	}
+
+>gcc sample.c -o sample
+
+./sample.out
+
+3.)
+VM1  create folder>properties>sharing>share this folder on network
+         cmd>ipconfing> (note the ip)
+
+VM2 run>\\{ipaddress}>copy to local
+
+

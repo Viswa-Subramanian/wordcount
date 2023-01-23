@@ -1,0 +1,79 @@
+
+Exno :           :     API’s of Hadoop to interact with it – to display
+                            file content of a file exist in hdfs.
+Batch_No :       : 
+*********************************************************************************
+
+student@RV-ANDROID21:~/141001$ vim /etc/profile
+student@RV-ANDROID21:~/141001$ source /etc/profile
+
+student@RV-ANDROID21:~/141001$ vim HadoopFScat.java
+
+import java.io.InputStream;
+import java.net.URI;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
+public class HadoopFScat {
+public static void main(String[] args) throws Exception {
+String uri = args[0];
+Configuration conf = new Configuration();
+FileSystem fileSystem = FileSystem.get(URI.create(uri), conf);
+InputStream inputStream = null;
+try{ inputStream = fileSystem.open(new Path(uri));
+IOUtils.copyBytes(inputStream, System.out, 4096, false);
+}finally{
+IOUtils.closeStream(inputStream); }} }
+
+
+Download the hadoop-core-1.2.1.jar and copy it on your batchno folder
+**********************************************************************
+student@RV-ANDROID21:~/141001$ ls
+
+file.txt  Hadoop         hadoop-core-1.2.1.jar 
+student@RV-ANDROID21:~/141001$ mkdir fscat
+
+student@RV-ANDROID21:~/141001$ ls
+file.txt  Hadoop         hadoop-core-1.2.1.jar 
+fscat 
+
+Compiling the java file - HadoopFScat.java:
+********************************************
+
+student@RV-ANDROID21:~/141001$ sudo /usr/lib/jvm/java-8-openjdk-amd64/bin/javac -classpath 
+		      /home/student/141001/hadoop-core-1.2.1.jar -d /home/student/141001/fscat 
+ 		      /home/student/141001/HadoopFScat.java 
+[sudo] password for student: 
+
+student@RV-ANDROID21:~/141001/fscat$ ls
+HadoopFScat.class
+
+Creating jar file for HadoopFScat.java:
+******************************************
+
+student@RV-ANDROID21:~/141001$ jar -cvf /home/hduser/fscat.jar -C /home/hduser/fscat/ .
+
+added manifest
+adding: HadoopFScat.class(in = 1224) (out= 667)(deflated 45%)
+
+student@RV-ANDROID21:~/141001$ ls
+file.txt   Hadoop               hadoop-core-1.2.1.jar  
+fscat      hadoop-2.7.0         HadoopFScat.java       fscat.jar 
+
+Executing jar file for HadoopFScat.java:
+*****************************************
+
+student@RV-ANDROID21:~/141001$ hadoop jar /home/hduser/fscat.jar HadoopFScat
+		      /user/input/file.txt
+
+
+
+
+Output 
+*******
+
+A virtual reality app has been launched to provide a sense of what it is like to live with different
+forms of dementia.
+A woman living with the condition and her husband told the Today programme why they
+supported the Android app's creation.

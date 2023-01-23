@@ -1,0 +1,144 @@
+
+Exno :           :    wordcount program to demonstrate the use of Map and Reduce tasks
+Batch_No :       : 
+******************************************************************************************
+
+student@RV-ANDROID21:~/141001$ vim /etc/profile
+student@RV-ANDROID21:~/141001$ source /etc/profile
+
+student@RV-ANDROID21:~/141001$ vim WordCount.java
+
+
+import java.io.IOException;
+import java.util.StringTokenizer;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+public class WordCount {
+public static class TokenizerMapper
+extends Mapper<Object, Text, Text, IntWritable>{
+private final static IntWritable one = new IntWritable(1);
+private Text word = new Text();
+public void map(Object key, Text value, Context context
+) throws IOException, InterruptedException {
+StringTokenizer itr = new StringTokenizer(value.toString());
+while (itr.hasMoreTokens()) {
+word.set(itr.nextToken());
+context.write(word, one);
+}
+}
+}
+public static class IntSumReducer
+extends Reducer<Text,IntWritable,Text,IntWritable> {
+private IntWritable result = new IntWritable();
+public void reduce(Text key, Iterable<IntWritable> values,Context context
+) throws IOException, InterruptedException {
+int sum = 0;
+for (IntWritable val : values)
+{ sum += val.get(); }
+result.set(sum);
+context.write(key, result);
+} }
+public static void main(String[] args) throws Exception {
+Configuration conf = new Configuration();
+Job job = Job.getInstance(conf, "word count");
+job.setJarByClass(WordCount.class);
+job.setMapperClass(TokenizerMapper.class);
+job.setCombinerClass(IntSumReducer.class);
+job.setReducerClass(IntSumReducer.class);
+job.setOutputKeyClass(Text.class);
+job.setOutputValueClass(IntWritable.class);
+FileInputFormat.addInputPath(job, new Path(args[0]));
+FileOutputFormat.setOutputPath(job, new Path(args[1]));System.exit(job.waitForCompletion(true) ? 0 : 1); }
+}
+
+Download the hadoop-core-1.2.1.jar and copy it on your batchno folder
+**********************************************************************
+student@RV-ANDROID21:~/141001$ ls
+
+file.txt  Hadoop         hadoop-core-1.2.1.jar 
+student@RV-ANDROID21:~/141001$ mkdir wc
+
+student@RV-ANDROID21:~/141001$ ls
+file.txt  Hadoop         hadoop-core-1.2.1.jar 
+fscat wc
+
+Compiling the java file - WordCount.java:
+********************************************
+
+student@RV-ANDROID21:~/141001$ sudo /usr/lib/jvm/java-8-openjdk-amd64/bin/javac -classpath 
+		      /home/student/141001/hadoop-core-1.2.1.jar -d /home/student/141001/wc 
+ 		      /home/student/141001/WordCount.java 
+[sudo] password for student: 
+
+student@RV-ANDROID21:~/141001/wc$ ls
+
+WordCount.class 
+WordCount$IntSumReducer.class  
+WordCount$TokenizerMapper.class
+
+Creating jar file for WordCount.java:
+******************************************
+
+student@RV-ANDROID21:~/141001$ jar -cvf /home/hduser/wc.jar -C /home/hduser/wc/ .
+
+added manifest
+adding: HadoopFScat.class(in = 1224) (out= 667)(deflated 45%)
+
+student@RV-ANDROID21:~/141001$ ls
+file.txt   Hadoop               hadoop-core-1.2.1.jar  
+fscat      hadoop-2.7.0         HadoopFScat.java       fscat.jar 
+wc.jar
+
+Executing jar file for WordCount.java:
+*****************************************
+
+student@RV-ANDROID21:~/141001$ hadoop jar /home/student/141001/wc.jar WordCount 
+/home/student/141001/hadoop-2.7.0/sbin/user/input 
+/home/student/141001/hadoop-2.7.0/sbin/user/output
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/sbin$ hadoop fs -cat /home/student/141001/
+						 hadoop-2.7.0/sbin/user/output/*
+
+
+
+
+
+Output :
+*************************************
+
+Distributed	1
+actions	1
+and	1
+are	1
+by	1
+communcication	1
+components	1
+computational	1
+computer	1
+computing	1
+coordinate	1
+in	1
+is	1
+located	1
+make	1
+message	1
+model	1
+network	1
+on	1
+passing	1
+process	1
+the	3
+their	1
+to	1
+which	1
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/sbin$
+
+

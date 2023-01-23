@@ -1,0 +1,232 @@
+sudo apt-get remove openssh-client openssh-server
+
+Install SSH again with:
+
+sudo apt-get install openssh-client openssh-server
+
+hadoop-env.sh
+sudo vim hadoop-env.sh
+export JAVA_HOME= /usr/lib/jvm/java-8-openjdk-amd64
+
+
+core-site.xml
+<configuration>
+<property>
+<name>fs.default.name</name>
+<value>hdfs://localhost:9000</value>
+</property>
+</configuration>
+
+hdfs-site.xml
+<configuration>
+<property>
+<name>dfs.replication</name>
+<value>1</value>
+</property>
+<property>
+<name>dfs.namenode.name.dir</name>
+<value>file:/home/student/Desktop/Batchno(Write your Batch 
+no)/hadoop_store/hdfs/namenode</value>
+</property>
+<property>
+<name>dfs.datanode.data.dir</name>
+<value>file:/home/student/Desktop/Batchno(Write your Batch 
+no)/hadoop_store/hdfs/datanode
+</value>
+</property>
+</configuration>
+
+yarn-site.xml
+<configuration>
+<property>
+<name>yarn.nodemanager.aux_services.mapreduce.shfulle.class</name>
+<value>org.appache.hadoop.mapred.ShuffleHandler</value>
+</property>
+</configuration>
+
+mapred-site.xml
+<configuration>
+<property>
+<name>mapreduce.framework.name</name>
+<value>yarn</value>
+</property>
+</configuration>
+
+sudo hdfs namenode -format
+./hdfs.sh namenode -format
+
+./start-all.sh
+/stop-all.sh
+
+2.)
+221118>
+create File.txt file with content
+hadoop fs - mkdir ../user
+hadoop fs - mkdir ../user/input
+hadoop fs -put sourcepath ../user/input
+hadoop fs -cat ../input/File.txt
+
+--------------
+
+221118>
+vim HadoopFScat.java
+
+import java.io.InputStream;
+importjava.net.URI
+importorg.apache.hadoop.conf.Configuration;
+importorg.apache.hadoop.fs.FileSystem;
+importorg.apache.hadoop.fs.Path;
+importorg.apache.hadoop.io.IOUtPls;
+public class HadoopFScat
+{
+public static void main(String[] args)
+ {
+ String uri=args[0];
+ Configuration conf = new Configuration();
+FileSystemfilesystem =FileSystem.get(URI.create(uri)conf);
+InputStreaminputstream=null;
+try
+ {
+Inputstream = fileSystem.open(new Path (uri));
+IOUtils.copyBytes(inputStream.System.out,4096,false);
+ }
+finally
+ {
+IOUtils.closeStream(inputStream);
+ }}}
+
+--------------
+
+import java.io.*;
+import java.net.URI;
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.fs.*;
+
+
+public class HadoopFScat {
+    public static void main(String[] args){
+
+        String uri = args[0];
+
+        Configuration conf = new Configuration();
+
+        InputStream is = null;
+
+        try{
+
+            FileSystem fs = FileSystem.get(URI.create(uri), conf);
+
+            is = fs.open(new Path(uri));
+
+            IOUtils.copyBytes(is, System.out, 4096, false);
+
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            IOUtils.closeStream(is);
+        }
+
+    }
+}
+
+--------------
+
+221118>
+copy hadoop-core-1.2.1.jar to 221118 folder
+
+221118>
+create a new folder fscat 
+
+221118>
+JAVAHOMEPATH/bin/javac -classpath  ../fscat  ../HadoopFScat.java
+
+22118>
+jar -cvf ../fscat.jar -c ../fscat/. (slash dot very important)
+
+221118>
+hadoop jar fscat.jar  HadoopFScat ../user/input/File.txt
+
+3.)
+221118>
+vim WordCount.java
+
+----------------
+import java.io.IOException;
+import java.util.StringTokenizer;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+public class WordCount
+{
+public static classs TokenizerMapper extends Mapper<Object, Text, Text, IntWritable>
+{
+private final static IntWritable one=new IntWritable(1);
+private Text word=new Text();
+public void map(Object key, Text value, Context context) throws IOException, InterruptedException
+{
+StringTokenizer itr=new StringTokenizer(value.toString());
+while(itr.hasMoreTokens())
+{
+word.set(itr.nextToken());
+context.write(word,one);
+}
+}
+}
+public static class IntSumReducer extends Reducer<Text, IntWritable, Text, Intwritable>
+{
+private IntWritable result=new IntWriitable();
+public void reduce(Text key, Iterable <IntWritable>values, context context) throws IOException, InterruptedException
+{
+int sum=0;
+for(IntWritable val : values)
+{
+sum +=val.get();
+}
+result.set(sum);
+context.write(key, result);
+}
+}
+public static void main(String[] args) throws Exception
+{
+Configuration conf=new Configuration();
+Job job=Job.getInstance(conf, "word count");
+job.setJarByClass(WordCount.class);
+job.setMapperClass(TokenizerMapper.class);
+job.setCombinerClass(IntSumReducer.class);
+job.setReducerClass(IntSumReducer.class);
+job.setOutputKeyClass(Text.class);
+job.setOutputValueClass(IntWritable.class);
+FileInputFormat.addInputPath(job,new Path(args[0]));
+FileOutputFormat.setOutputPath(job,new Path(args[1]));
+System.exit(job.waitForCompletion(true ? 0:1));
+}
+}
+
+
+----------------
+
+221118>
+makdir wc
+
+221118>
+copy hadoop-core-1.2.1.jar to 221118 folder
+
+221118>
+JAVAHOMEPATH/bin/javac -classpath ../hadoop-core-1.2.1.jar -d  ../wc  ../WordCount.java
+
+221118>
+jar -cvf ../wordcount.jar ../wc/. (slash dot very important)
+
+221118>
+hadoop jar wordcount.jar WordCount ../user/output
+
+221118>
+hadoop fs -cat ../user/output/*

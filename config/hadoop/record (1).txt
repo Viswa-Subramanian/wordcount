@@ -1,0 +1,217 @@
+
+Exno :           :      Find procedure to set up the one node Hadoop cluster.
+Batch_No :       : 
+*********************************************************************************
+
+
+
+student@RV-ANDROID21:~$ sudo vim /etc/profile
+[sudo] password for student: "Type Your Student Password"
+
+student@RV-ANDROID21:~$ cd 
+
+student@RV-ANDROID21:~/141001$ source /etc/profile
+
+student@RV-ANDROID21:~/141001$ java -version
+
+openjdk version "1.8.0_131"
+OpenJDK Runtime Environment (build 1.8.0_131-8u131-b11-0ubuntu1.16.04.2-b11)
+OpenJDK 64-Bit Server VM (build 25.131-b11, mixed mode)
+
+Download and Copy the hadoop-2.7.0.tar.gz in your folder
+-------------------------------------------------------
+
+student@RV-ANDROID21:~/141001$ ls
+hadoop-2.7.0.tar.gz 
+
+Extracting Hadoop Bundle
+-------------------------
+
+student@RV-ANDROID21:~/141001$ tar xvzf hadoop-2.6.0.tar.gz
+
+After Extracting Hadoop bundle change the directory to configure the files
+
+student@RV-ANDROID21:~/141001$ cd hadoop-2.7.0/etc/hadoop/
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/etc/hadoop$ ls
+
+mapred-site.xml
+core-site.xml              
+hadoop-env.sh              
+hdfs-site.xml              
+yarn-site.xml
+
+
+Configure the following files.
+*******************************
+
+1. hadoop-env.sh
+2. core-site.xml
+3. hdfs-site.xml
+4. yarn-site.xml
+5. mapred-site.xml
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/etc/hadoop$ vim hadoop-env.sh
+
+# Set Hadoop-specific environment variables here.
+
+# The only required environment variable is JAVA_HOME.  All others are
+# optional.  When running a distributed configuration it is best to
+# set JAVA_HOME in this file, so that it is correctly defined on
+# remote nodes.
+
+# The java implementation to use.
+**************************************************
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+**************************************************
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/etc/hadoop$ vim core-site.xml
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+<property>
+
+<name>fs.default.name</name>
+
+<value>hdfs://localhost:9000</value>
+
+</property>
+</configuration>
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/etc/hadoop$ vim hdfs-site.xml
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+<property>
+      <name>dfs.replication</name>
+      <value>1</value>
+ </property>
+ <property>
+      <name>dfs.namenode.name.dir</name>
+      <value>file:/home/student/141001/hadoop_store/hdfs/namenode</value>
+ </property>
+ <property>
+      <name>dfs.datanode.data.dir</name>
+      <value>file:/home/student/141001/hadoop_store/hdfs/datanode</value>
+ </property>
+</configuration>
+~                                 
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/etc/hadoop$ vim yarn-site.xml
+
+-->
+<configuration>
+<!-- Site specific YARN configuration properties -->
+<property>
+      <name>yarn.nodemanager.aux-services</name>
+      <value>mapreduce_shuffle</value>
+</property>
+<property>
+      <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+      <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+</property>
+</configuration>
+
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/etc/hadoop$ vim mapred-site.xml
+
+<!-- Put site-specific property overrides in this file. -->
+<configuration>
+<property>
+      <name>mapreduce.framework.name</name>
+      <value>yarn</value>
+</property>
+</configuration>
+
+After Finishing the configuration formatting the HDFS:
+********************************************************
+
+Formatting namenode as preliminary stage of HDFS:
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/etc/hadoop$ hdfs namenode -format
+
+17/08/16 12:59:25 INFO namenode.NameNode: STARTUP_MSG: 
+/************************************************************
+STARTUP_MSG: Starting NameNode
+STARTUP_MSG:   host = RV-ANDROID21/10.1.1.198
+STARTUP_MSG:   args = [-format]
+STARTUP_MSG:   version = 2.6.0-cdh5.7.1
+STARTUP_MSG:   classpath = /etc/hadoop/conf:/usr/lib/hadoop/lib/paranamer-2.3.jar.......
+.
+.
+.
+.
+17/08/16 12:59:32 INFO namenode.NameNode: SHUTDOWN_MSG: 
+/************************************************************
+SHUTDOWN_MSG: Shutting down NameNode at RV-ANDROID21/10.1.1.198
+*************************************************************
+
+Once the HDFS Formatting completes move to the sbin directory
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/etc/hadoop$ cd ..
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/etc$ cd ..
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0$ ls
+bin  etc  include  lib  libexec  LICENSE.txt  logs  NOTICE.txt  README.txt  sbin  share
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0$ cd sbin/
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/sbin$ 
+
+Starting Hadoop:
+****************
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/sbin$ ./start-all.sh
+This script is Deprecated. Instead use start-dfs.sh and start-yarn.sh
+
+Starting namenodes on [localhost]
+student@localhost's password: 
+
+localhost: starting namenode, logging to /home/student/141001/hadoop-2.7.0/logs/hadoop-
+	   student-namenode-RV-ANDROID21.out
+
+student@localhost's password: 
+
+localhost: starting datanode, logging to /home/student/141001/hadoop-2.7.0/logs/hadoop-
+	   student-datanode-RV-ANDROID21.out
+
+Starting secondary namenodes [0.0.0.0]
+student@0.0.0.0's password: 
+
+0.0.0.0: starting secondarynamenode, logging to /home/student/141001/hadoop-2.7.0/
+	 logs/hadoop-student-secondarynamenode-RV-ANDROID21.out
+starting yarn daemons
+
+starting resourcemanager, logging to /home/student/141001/hadoop-2.7.0/logs/
+		yarn-student-resourcemanager-RV-ANDROID21.out
+student@localhost's password: 
+localhost: starting nodemanager, logging to /home/student/141001/hadoop-2.7.0/
+	   logs/yarn-student-nodemanager-RV-ANDROID21.out
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/sbin$ jps
+5888 NodeManager
+5392 SecondaryNameNode
+5190 DataNode
+6026 Jps
+5564 ResourceManager
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/sbin$ ./stop-all.sh
+This script is Deprecated. Instead use stop-dfs.sh and stop-yarn.sh
+Stopping namenodes on [localhost]
+student@localhost's password: 
+localhost: namenode to stop
+student@localhost's password: 
+localhost: stopping datanode
+Stopping secondary namenodes [0.0.0.0]
+student@0.0.0.0's password: 
+0.0.0.0: stopping secondarynamenode
+stopping yarn daemons
+stopping resourcemanager
+student@localhost's password: 
+localhost: stopping nodemanager
+
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/sbin$
+student@RV-ANDROID21:~/141001/hadoop-2.7.0/sbin$ 

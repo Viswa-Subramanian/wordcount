@@ -1,0 +1,81 @@
+Install OpenSSH
+sudo apt install openssh-server openssh-client -y
+
+Start SSH
+sudo service ssh start
+
+-----------------------------------------------------------------
+
+
+
+Folder structure:
+221043
+-hadoop-2.7.0
+-hadoop_store
+  - hdfs
+    - namenode
+    - datanode
+
+
+-----------------------------------------------------------------
+
+
+https://www.linkedin.com/pulse/installation-hadoop-single-node-cluster-run-simple-applications-k
+
+
+-----------------------------------------------------------------
+
+
+Unzip tar file first->
+$tar -xvf hadoop-2.7.0.tar.gz
+
+Configurations->
+$cd hadoop-2.7.0/etc/hadoop/
+
+1. set java home in `hadoop-env.sh` and add it to PATH in `~/.bashrc`
+$which java
+path
+
+$readlink -f path
+full-path/bin/…
+
+=>edit  `hadoop-env.sh` file
+add the following line:
+export JAVA_HOME=full-path
+
+=>edit `~/.bashrc` file
+add the following line:
+export JAVA_HOME=full-path
+export PATH=${JAVA_HOME}/bin:$PATH
+
+2. edit `core-site.xml`
+copy/paste
+
+3. edit `hdfs-site.xml`
+copy/paste
+Set the datanode and namenode path properly
+
+4. rename `mapred-site.xml.template` to edit `mapred-site.xml`
+copy/paste
+
+5. edit `yarn-site.xml`
+copy/paste
+
+Set HADOOP_HOME in `~/.bashrc`->
+$sudo gedit ~/.bashrc
+Add the following line:
+export HADOOP_HOME=/home/…/hadoop-2.7.0
+
+$source ~/.bashrc
+
+Run the namenode and start Hadoop->
+$cd hadoop-2.7.0
+$bin/hdfs namenode -format
+-----
+If not working (connection refused SSH)->
+$sudo apt install openssh-server openssh-client -y
+$sudo service ssh start
+-----
+$cd sbin
+$./start-all.sh
+$jps
